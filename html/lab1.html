@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    #show{
+      padding: 50px;
+      background-color: yellow;
+      text-align: center;
+
+      color: red;
+      font-size: 25px;
+      font-weight: bold;
+    }
+
+    #group-button{
+      padding: 10px;
+      text-align: center;
+      
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+
+    }
+
+    button[type=button]{
+      background-color: rgb(218, 217, 217);
+
+      border: 1px solid rgb(218, 217, 217);
+      border-radius: 4px;
+
+      font-size: 16px;
+
+      width: 60px;
+      height: 30px;
+
+      cursor: pointer;
+
+    }
+  </style>
+</head>
+<body>
+  <div id="show">
+    <p id="s_time">0</p>
+  </div>
+  <div id="group-button">
+    <button type="button" id="start">시작</button>
+    <button type="button" id="stop">중지</button>
+  </div>
+</body>
+</html>
+
+<script>
+  window.onload = function(){
+    const start = document.getElementById('start');
+    const stop = document.getElementById('stop');
+    let time = document.getElementById('s_time');
+
+    let timer;
+
+    start.addEventListener('click', ()=>{
+      // 시작을 여러번 누르면 속도가 증가하는 문제
+        // setInterval은 실행하면 숫자 ID가 생김
+        // 만약 실행해서 ID가 이미 있으면 진행하지 않고 함수 종료
+      if(timer) return; 
+
+
+      time.innerText = 0; // 0 으로 초기화하고 시작
+
+      timer = setInterval(() => {
+        time.innerText = Number(time.innerText) + 1;
+      }, 1000);
+    });
+
+    stop.addEventListener('click', () => {
+      clearInterval(timer);
+
+      timer = null; // setInterval()에서 생성한 정수 ID를 없앰(다시 시작하기 위함)
+    });
+  }
+</script>
