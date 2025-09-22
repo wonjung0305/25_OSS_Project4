@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <h1 id="texts">BOM 실습</h1>
+  
+</body>
+</html>
+
+<script>
+  let texts = document.getElementById("texts");
+  
+  console.log("현재 페이지 경로:", location.pathname);
+
+  // 방문한적 없으면 (local storage에서 확인)
+  if(!localStorage.getItem("hasVisited")){
+    alert("환영합니다! 처음 방문해주셨네요 😊");
+
+    // 방문했으니까 기록 저장
+    localStorage.setItem("hasVisited", "true");
+  }else{
+    texts.innerText = "BOM 실습 => 이미 방문한 사용자";
+  }
+
+</script>
+
+<!-- 
+  alert("환영합니다! 처음 방문해주셨네요 😊");
+  console.log("/lab2.html");
+
+  localStorage나 cookie에 저장해야함 -> session storage는 탭이 닫히면 기록이 사라짐
+
+  localStorage에 hasVisted 라는 키로 기록
+  현재 접속 중인 페이지의 경로를 console.log()로 출력
+    window.location.pathname
+-->
