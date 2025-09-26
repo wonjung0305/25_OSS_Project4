@@ -1,0 +1,141 @@
+/* ----------------------------- ----------------------------- */
+/* 전체를 가로로 묶기 위한 */
+#all {
+  display: grid;
+  grid-template-columns: 440px 1fr;
+  gap: 0;
+}
+
+#form_group {
+  padding: 12px;
+
+  border-right: 2px solid black;
+}
+
+#col_input {
+  display: grid;
+  grid-template-columns: 1fr; /* 한 줄로 나열*/
+  gap: 8px;
+}
+
+/* ----------------------------- label & input ----------------------------- */
+#col_input{
+  display: flex;
+  flex-direction: column;
+}
+
+label{
+  font-size: 16px;
+  font-weight: bold;
+
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* 왼족부터 정렬*/
+}
+
+label small{
+  color: rgba(146, 146, 146, 0.748);
+  
+  font-size: 12px;
+  font-style: italic;
+
+  margin-left: 4px;
+}
+
+label input[type="text"],
+label input[type="number"]{
+  width: 100%;
+  margin-top: 6px;
+
+  box-sizing: border-box; /* 전부 포함해서 100%되도록*/
+
+  padding: 4px 4px;
+
+  border: 1px solid rgb(22, 22, 22) ;
+  border-radius: 2px;
+  
+}
+
+
+
+label input::placeholder{
+  padding: 4px 3px;
+
+}
+
+/* ----------------------------- button ----------------------------- */
+button[type="button"] {
+  border: 0;
+
+  width: 100%;
+}
+
+#btn_row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+
+  margin: 0px;
+  margin-top: 12px;
+}
+
+#modify_btn {
+  background-color: rgb(0, 0, 0);
+  color: white;
+
+  cursor: pointer;
+}
+
+#del_btn {
+  background-color: rgb(205, 46, 58);
+  color: white;
+
+  cursor: pointer;
+}
+
+#add_btn {
+  background-color: rgb(0, 0, 0);
+  color: white;
+
+  cursor: pointer;
+}
+
+#read_btn {
+  background-color: rgb(0, 71, 160);
+  color: white;
+
+  width: 100%;
+  display: block;
+  margin: 0;
+
+  cursor: pointer;
+}
+
+
+/* ----------------------------- 오른쪽 ----------------------------- */
+/* ----------------------------- screen 정렬 ----------------------------- */
+
+#screen{
+  display: flex;
+  flex-direction: column;
+
+  align-items: center; /* 가로로 중앙 정렬시키기*/
+}
+
+/* 반응형 고려- 모바일 환경에서*/ 
+@media (max-width: 768px){
+  #all{
+    grid-template-columns: 1fr;
+  }
+
+  /*구분 표시 없애고, 그 선을아래쪽으로*/
+  #form_group{
+    border-right: none;
+    border-bottom: 2px solid black;
+  }
+
+  #screen{
+    align-items: center;
+  }
+
+
+}
