@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>JS AJAX를 이용한 CRUD 실습</title>
+    <link rel="stylesheet" href="../css/js_ajax.css" />
+  </head>
+  <body>
+    <div id="all">
+      <div id="form_group">
+        <!-- 추가, 수정, 삭제용 form -->
+        <form action="" method="post">
+          <!-- json-server --watch data.json --port 3001-->
+          <div id="col_input">
+            <label>
+              <span>id<small>(수정/삭제할 때만)</small></span>
+              <input
+                type="number"
+                placeholder="id(수정, 삭제)"
+                id="id"
+                name="id"
+            /></label>
+            <label>
+              <span>임기<small>(추가/수정할 때만)</small></span>
+              <input
+                type="text"
+                placeholder="임기를 숫자만 입력해주세요 "
+                id="reign"
+                name="reign"
+              />
+            </label>
+            <label>
+              <span>이름<small>(추가/수정할 때만)</small></span>
+              <input
+                type="text"
+                placeholder="e.g. 홍길동"
+                id="name"
+                name="name"
+            /></label>
+            <label>
+              <span>나이<small>(추가/수정할 때만)</small></span>
+              <input type="text" placeholder="e.g. 54" id="age" name="age" />
+            </label>
+            <label>
+              <span>소속 정당<small>(추가/수정할 때만)</small></span>
+              <input
+                type="text"
+                placeholder="e.g. 무소속"
+                id="party"
+                name="party"
+              />
+            </label>
+          </div>
+
+          <div id="btn_row">
+            <button type="button" id="modify_btn">수정</button>
+            <button type="button" id="del_btn">삭제</button>
+            <button type="button" id="add_btn">추가</button>
+          </div>
+          <button type="button" id="read_btn">정보 조회</button>
+        </form>
+      </div>
+
+      <div id="screen">
+        <h1>역대 대한민국 대통령</h1>
+        <ul id="output"></ul>
+      </div>
+    </div>
+  </body>
+</html>
+
+<script>
+  // 폼 제출 막기
+  const form = document.querySelector("form");
+  form.addEventListener("submit", (e) => e.preventDefault());
+
+  // 버튼
+  const read_btn = document.getElementById("read_btn");
+  const modify_btn = document.getElementById("modify_btn");
+  const add_btn = document.getElementById("add_btn");
+  const del_btn = document.getElementById("del_btn");
+
+  const output = document.getElementById("output");
+
+  // id로 들고오고
+  const idElement = document.getElementById("id");
+  const reignElement = document.getElementById("reign");
+  const nameElement = document.getElementById("name");
+  const ageElement = document.getElementById("age");
+  const partyElement = document.getElementById("party");
+
+  /* ------------------------------------------------------------------*/
+  // 조회 함수
+  function readInfo() {
+    fetch("http://localhost:3001/presidents") // 데이터 받아오기
+      .then((response) => response.json())
+      .then((data) => {
+        // 자바스크립트 객체로 바꾸고
+        output.textContent = ""; // 내용 비우고
+        data.forEach((inform) => {
+          const li = document.createElement("li"); // li 만들고
+          li.textContent = `제${inform.reign}대 대통령 ${inform.name}  (${inform.age}, 소속 정당: ${inform.party}) => id: ${inform.id}`;
+          output.appendChild(li); // 밑으로 추가하기
+        });
+      })
+      .catch((error) => {
+        console.error(error);
+        output.textContent = "함수 readInfo - fetch 실패";
+      });
+  }
+
+  /* ------------------------------------------------------------------*/
+  /* ------------------------------------------------------------------*/
+
+  // 추가하는 함수
+  function addInfo() {
+    // 공백 다듬고, 숫자는 숫자로 변환
+    const reign = Number(reignElement.value.trim());
+    const age = Number(ageElement.value.trim());
+    const name = nameElement.value.trim();
+    const party = partyElement.value.trim();
+    // 추가하기 위한 내용 모두 입력받기 위한 알림
+    if (!reign || !name || !age || !party) {
+      alert("재임, 이름, 나이, 소속 정당 모두를 입력해주셔야 합니다.");
+
+      // 폼 리셋
+      reignElement.value = "";
+      nameElement.value = "";
+      ageElement.value = "";
+      partyElement.value = "";
+      return;
+    }
+
+    // POST로 보내기
+    fetch("http://localhost:3001/presidents", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" }, // body가 JSON임을 알림
+      body: JSON.stringify({ reign, name, age, party }), // 보낼 데이터를 문자화
+    })
+      .then((response) => response.json())
+      .then((newPresident) => {
+        const li = document.createElement("li"); // 새로운 li 만들고
+        li.textContent = `제${newPresident.reign}대 대통령 ${newPresident.name}  (${newPresident.age} 소속 정당: ${newPresident.party})`;
+        output.appendChild(li); // 맨 아래에 새 항목 추가
+      })
+      .catch((error) => {
+        console.error(error);
+        output.textContent = "함수 addInfo fetch() 에러";
+      });
+
+    // 마지막에 폼 리셋해서 비우기
+    reignElement.value = "";
+    nameElement.value = "";
+    ageElement.value = "";
+    partyElement.value = "";
+  }
+
+  /* ------------------------------------------------------------------*/
+  /*-
+  수정하는 함수
+  1) id만 입력하게 하고, input type="text"에 정보를 올린다.
+  2) 수정하고 추가한다.
+  */
+  function modifyInfo() {
+    // 공백 다듬고, 숫자는 숫자로 변환
+    const id = Number(idElement.value.trim());
+    const reign = Number(reignElement.value.trim());
+    const age = Number(ageElement.value.trim());
+    const name = nameElement.value.trim();
+    const party = partyElement.value.trim();
+
+    // 모든 값 입력하게 하기
+    if (!id || !reign || !age || !name || !party) {
+      alert(
+        "수정하기 위해서 id, 재임, 이름, 나이, 소속 정당 모두를 입력해주세요"
+      );
+      return;
+    }
+
+    // id 확인 후, 내용 수정
+    // json-server는 데이터 배열을 만들면 자동 라우트를 만들어줌
+    // 강의에 있었는데 => users/3은 id가 3인 걸 찾는 것
+    // => fetch로 보낼 때 " " 만쓰면 ${}는 안 보내짐 ==> 벡틱으로 묶어야 함
+    fetch(`http://localhost:3001/presidents/${id}`)
+      .then((response) => {
+        if (!response.ok) {
+          console.log("Error: id존재하지 않음");
+          throw new Error("Error: id 존재하지 않음");
+          // return; then이 계속 이어짐 => throw로 then 실행을 깨고 catch로
+        }
+      })
+      .then(() => {
+        // confirm으로 수정할지 안할지 확인받기
+        if (!confirm(`(id: ${id}에 있는 항목을 수정하시겠습니까? )`)) {
+          // return; // 취소, 이 부분도 throw로 예외처리
+          throw new Error("수정 취소");
+        }
+
+        // 값 바꿔서 반환해주기
+        return fetch(`http://localhost:3001/presidents/${id}`, {
+          method: "PUT", // 수정, PUT or PATCH
+          headers: { "Content-Type": "application/json" }, // body가 json이다
+          body: JSON.stringify({ reign, name, age, party }),
+        });
+      })
+      .then((response) => {
+        if (!response.ok) throw new Error("수정 실패");
+        return response.json();
+      })
+      .then(() => {
+        // 입력 폼은 비워주기
+        idElement.value = "";
+        reignElement.value = "";
+        nameElement.value = "";
+        ageElement.value = "";
+        partyElement.value = "";
+      })
+      .catch((error) => {
+        if (error.message === "수정 취소") return; // 사용자가 취소한 경우는 바로 끝내기
+
+        // 다른 에러인 경우 메시지 띄우기
+        output.textContent = `Modify 부분 fetch 에러: ${error.message} `;
+      });
+  }
+  /* ------------------------------------------------------------------*/
+
+  /* ------------------------------------------------------------------*/
+  // 삭제하는 함수
+  function deleteInfo() {
+    // 삭제하기 위해서 id를 확인
+    const id = Number(idElement.value.trim());
+
+    if (!id) {
+      alert("id를 정확히 입력해주세요");
+      return;
+    }
+
+    fetch(`http://localhost:3001/presidents/${id}`)
+      .then((response) => {
+        // id가 존재하는지 확인
+        if (!response.ok) throw new Error("존재하지 않는 id입니다.");
+        return response.json();
+      })
+      .then((info) => {
+        // id가 존재할 때, 지울 건지 확인
+        if (
+          !confirm(
+            `id: ${info.id}에 해당하는 ${info.name}에 대한 정보를 모두 삭제하시겠습니까?`
+          )
+        ) {
+          throw new Error("삭제 취소");
+        }
+
+        return fetch(`http://localhost:3001/presidents/${id}`, {
+          method: "DELETE", // 삭제는 method만 있으면 됨
+        });
+      })
+      .then((response) => {
+        // 삭제되었는지 여부?
+        if (!response.ok) throw new Error("삭제 오류");
+        alert("삭제되었습니다.");
+      })
+      .catch((error) => {
+        if (error.message === "삭제 취소") return; // 취소를 누른 경우, 넘어가고
+        alert(error.message); // 삭제 취소가 아닌 경우, 오류 메세지 보이게
+        console.error(error); // 콘솔에도
+      });
+  }
+  // fetch()는 연결이 끊기지 않는 이상 무조건 then으로 넘어감
+  // 정상 응답 response.ok, 404, 500 등의 에러 => response.ok == false
+
+  // 버튼 눌럿을 때
+  read_btn.addEventListener("click", readInfo); // 정보 조회
+  add_btn.addEventListener("click", addInfo); // 정보 추가
+  modify_btn.addEventListener("click", modifyInfo); // 정보 수정
+  del_btn.addEventListener("click", deleteInfo); // 정보 삭제
+</script>
+
+<!--
+1. 버튼
+  => 조회(READ), 추가(Create), 수정(Update), 삭제(Delete)
+
+2. AJAX 요청 구현 (fetch() 사용)
+  => GET (데이터 조회) : 
+  => POST (데이터 추가) : 
+  => PUT/PATCH (데이터 수정)
+  => DELETE (데이터 삭제)
+
+3. UI 출력
+  => 가져온 데이터를 div나 ul에 출력
+
+- innerHTML보다 textContent가 더 안전하다고 공부해서 textContet 사용
+
+- fetch() 함수는 브라우저에서 HTTP 요청을 보내는 기본 함수
+  : 첫 번째 인자는 URL
+  : 두 번째 인자는 옵션 객체 (옵션이 없으면 GET)
+
+
+
+
+-->
