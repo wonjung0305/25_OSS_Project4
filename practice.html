@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <h1>JS-JSON Test</h1>
+    <button type="button" id="string_btn">JSON.stringify()</button>
+
+    <div id="content_string"></div>
+
+    <button type="button" id="obj_btn">JSON.parse()</button>
+    <div id="content_obj"></div>
+  </body>
+</html>
+
+<script>
+  const string_btn = document.getElementById("string_btn");
+
+  const obj_btn = document.getElementById("obj_btn");
+
+  const user = {
+    name: "wonjung",
+    age: 23,
+  };
+
+  function toJSON() {
+    document.getElementById("content_string").innerText = JSON.stringify(user);
+  }
+
+  function toJS() {
+    const jstr = document.getElementById("content_string").innerText;
+
+    if (jstr === "") { // 내용이 없을 때는 user객체에서 바로 가져오고
+      document.getElementById("content_obj").innerText =
+        '"name" : ' + user.name + ' "age": ' + user.age;
+    } else { // 내용이 있을 때는 parse해서 객체로 만들고 가져옴
+      const obj = JSON.parse(jstr);
+      document.getElementById("content_obj").innerText =
+        '"name" : ' + obj.name + ' "age": ' + obj.age;
+    }
+  }
+
+  string_btn.addEventListener("click", toJSON);
+  obj_btn.addEventListener("click", toJS);
+</script>
