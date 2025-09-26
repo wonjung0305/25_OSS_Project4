@@ -16,7 +16,7 @@
             <label>
               <span>id<small>(수정/삭제할 때만)</small></span>
               <input
-                type="number"
+                type="text"
                 placeholder="id(수정, 삭제)"
                 id="id"
                 name="id"
@@ -164,7 +164,7 @@
   */
   function modifyInfo() {
     // 공백 다듬고, 숫자는 숫자로 변환
-    const id = Number(idElement.value.trim());
+    const id = idElement.value.trim();
     const reign = Number(reignElement.value.trim());
     const age = Number(ageElement.value.trim());
     const name = nameElement.value.trim();
@@ -229,7 +229,7 @@
   // 삭제하는 함수
   function deleteInfo() {
     // 삭제하기 위해서 id를 확인
-    const id = Number(idElement.value.trim());
+    const id = idElement.value.trim();
 
     if (!id) {
       alert("id를 정확히 입력해주세요");
